@@ -1,28 +1,47 @@
-import React, { useState, useContext } from "react";
-import { View, FlatList, Text, Pressable, Alert, StyleSheet,Image } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { View, FlatList, Text, TextInput, Pressable, Alert, StyleSheet,Image } from "react-native";
 import ListContext from "../context/ListContext";
 import ConfirmModal from "../components/ConfirmModal"; 
 import AuthContext from "../context/AutoContext";
 import { globalStyles } from "../styles/globalstyles";
 
 export default function LoteListScreen({ navigation }) {
-  const { list, updateListItem } = useContext(ListContext);
-  const { signOut } = useContext(AuthContext);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [loteSelecionado, setLoteSelecionado] = useState(null);
+  const { list, updateListItem } = useContext(ListContext)
+  const { signOut } = useContext(AuthContext)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [loteSelecionado, setLoteSelecionado] = useState(null)
+  const [busca, setBusca] = useState('')
+  const [listaFiltrada, setListaFiltrada] = useState(list)
   
   async function mudarStatus(status, cor) {
     if (loteSelecionado) {
       const loteAtualizado = { ...loteSelecionado, status, cor };
-      await updateListItem(loteAtualizado);
+      await updateListItem(loteAtualizado)
       setModalVisible(false);
       setLoteSelecionado(null);
     }
   }
   
   function abrirModal(item) {
-    setLoteSelecionado(item);
-    setModalVisible(true);
+    setLoteSelecionado(item)
+    setModalVisible(true)
+  }
+
+  function handleSearch(text) {
+    setBusca(text)
+    
+    if (text === '') {
+      setListaFiltrada(list)
+      return
+    }
+
+    const dadosFiltrados = list.filter((item) => {
+      const itemNome = item.nome ? item.nome.toUpperCase() : ''
+      const textData = text.toUpperCase()
+      return itemNome.indexOf(textData) > -1
+    })
+
+    setListaFiltrada(dadosFiltrados)
   }
 
   function alertaSignOut() {
@@ -42,6 +61,10 @@ export default function LoteListScreen({ navigation }) {
     );
   }
 
+  useEffect(() => {
+    setListaFiltrada(list);
+  }, [list]);
+
   return (
     <View style={[globalStyles.container]}>
       <View style={styles.userArea}>
@@ -50,18 +73,32 @@ export default function LoteListScreen({ navigation }) {
           onPress={alertaSignOut}
         >
           <Image 
-            source={{ uri: 'https://jpimg.com.br/uploads/2020/01/o-maskara.jpg' }} 
+            source={{ uri: 'https://cdn-icons-png.freepik.com/512/8500/8500156.png' }} 
             style={styles.fotoPerfil} 
           />
         </Pressable>
         <Text style={globalStyles.titulo2}>admin@gmail.com</Text>
       </View>
+      <View style={styles.containerBusca}>
+        <TextInput
+          style={[globalStyles.titulo2, styles.inputBusca]}
+          placeholder="Pesquisar lote..."
+          value={busca}
+          onChangeText={(t) => handleSearch(t)}
+          clearButtonMode="while-editing"
+        />
+      </View>
       <FlatList
-        data={list || []}
+        data={listaFiltrada || []}
         style={{flex: 1}}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }} // Espaço extra para o botão não cobrir o último item
+        contentContainerStyle={{ paddingBottom: 100 }}
+        ListEmptyComponent={
+          <Text style={[globalStyles.titulo2, styles.empty]}>
+            {busca.length > 0 ? "Nenhum resultado encontrado" : "Nenhum lote cadastrado"}
+          </Text>
+        }
         renderItem={({ item }) => (
           <View style={styles.containerItem}>
             <View style={{ flex: 1 }}>
@@ -90,7 +127,6 @@ export default function LoteListScreen({ navigation }) {
             </View>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>Nenhum lote cadastrado</Text>}
       />
 
       <ConfirmModal 
@@ -100,7 +136,6 @@ export default function LoteListScreen({ navigation }) {
         onConfirm={(status, cor) => mudarStatus(status, cor)}
       />
 
-      {/* BOTÃO ADICIONAR (FAB) */}
       <Pressable 
         style={[globalStyles.button]}
         onPress={() => navigation.navigate("NovoLote")}
@@ -128,6 +163,18 @@ const styles = StyleSheet.create({
   userText: {
     textAlign: 'center'
   },
+  inputBusca: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    elevation: 3,
+    shadowColor: "#000", // Sombras para iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    paddingTop: 21,
+    paddingBottom: 21
+  },
   containerItem: {
     backgroundColor: "#fff",
     flexDirection: "row",
@@ -136,7 +183,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 10,
     elevation: 3,
-    shadowColor: "#000", // Sombras para iOS
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -150,11 +197,11 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   fotoPerfil: {
-    width: 50,           // Largura
-    height: 50,          // Altura (deve ser igual à largura)
-    borderRadius: 50,     // Metade do valor acima
-    borderWidth: 2,       // Opcional: borda ao redor
-    borderColor: '#FFF',  // Opcional: cor da borda
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#FFF'
   },
   textoIcone: { color: "#fff", fontSize: 16 },
   empty: { textAlign: "center", marginTop: 50, fontSize: 16, color: "#999" }
