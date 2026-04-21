@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { View, FlatList, Text, TextInput, Pressable, Alert, StyleSheet,Image } from "react-native";
 import ListContext from "../context/ListContext";
+import DetailsModal from "../components/DetailsModal";
 import ConfirmModal from "../components/ConfirmModal"; 
 import AuthContext from "../context/AutoContext";
 import { globalStyles } from "../styles/globalstyles";
@@ -12,19 +13,26 @@ export default function LoteListScreen({ navigation }) {
   const [loteSelecionado, setLoteSelecionado] = useState(null)
   const [busca, setBusca] = useState('')
   const [listaFiltrada, setListaFiltrada] = useState(list)
+  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [loteParaDetalhe, setLoteParaDetalhe] = useState(null);
   
   async function mudarStatus(status, cor) {
     if (loteSelecionado) {
       const loteAtualizado = { ...loteSelecionado, status, cor };
       await updateListItem(loteAtualizado)
-      setModalVisible(false);
-      setLoteSelecionado(null);
+      setModalVisible(false)
+      setLoteSelecionado(null)
     }
   }
   
   function abrirModal(item) {
     setLoteSelecionado(item)
     setModalVisible(true)
+  }
+
+  function abrirDetalhes(item) {
+    setLoteParaDetalhe(item)
+    setDetailsVisible(true)
   }
 
   function handleSearch(text) {
@@ -62,7 +70,7 @@ export default function LoteListScreen({ navigation }) {
   }
 
   useEffect(() => {
-    setListaFiltrada(list);
+    setListaFiltrada(list)
   }, [list]);
 
   return (
@@ -100,15 +108,15 @@ export default function LoteListScreen({ navigation }) {
           </Text>
         }
         renderItem={({ item }) => (
-          <View style={styles.containerItem}>
-            <View style={{ flex: 1 }}>
-              <Text style={[globalStyles.titulo2, { color: item.cor || "#333" , textAlign: 'left'}]}>
+          <View style={[styles.containerItem, { borderLeftColor: item.cor || "#333" }]}>
+            <Pressable style={{ flex: 1 }} onPress={() => abrirDetalhes(item)}>
+              <Text style={[globalStyles.titulo2, {textAlign: 'left'}]}>
                 {item.nome}
               </Text>
               <Text style={[globalStyles.subtitulo, {textAlign: 'left'}]}>
                 {item.status || "Pendente"}
               </Text>
-            </View>
+            </Pressable>
 
             <View style={styles.areaBotoes}>
               <Pressable 
@@ -127,6 +135,16 @@ export default function LoteListScreen({ navigation }) {
             </View>
           </View>
         )}
+      />
+
+      <DetailsModal 
+        visible={detailsVisible}
+        lote={loteParaDetalhe}
+        onClose={() => setDetailsVisible(false)}
+        onEdit={() => {
+          setDetailsVisible(false)
+          navigation.navigate("EditarLote", { lote: loteParaDetalhe })
+        }}
       />
 
       <ConfirmModal 
@@ -168,7 +186,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     elevation: 3,
-    shadowColor: "#000", // Sombras para iOS
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -182,6 +200,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginTop: 10,
     borderRadius: 10,
+    borderLeftWidth: 6,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

@@ -1,18 +1,16 @@
-import React, { useContext } from "react"; // 1. Importe o useContext
+import React, { useContext } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AuthContext from "../context/AutoContext"; // 2. Importe seu contexto
 import { View, ActivityIndicator } from "react-native";
-// Telas
+import AuthContext from "../context/AutoContext";
 import LoginScreen from "../screens/LoginScreen";
 import LoteListScreen from "../screens/LoteListScreen";
 import InspectionScreen from "../screens/InspectionScreen";
 import EditLoteScreen from "../screens/EditarLoteScreen";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator()
 
 export default function AppRoutes() {
-  // 3. Pegamos o usuário do contexto global
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext)
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -32,7 +30,6 @@ export default function AppRoutes() {
         },
       }}
     >
-      {/* 4. LÓGICA DE PERSISTÊNCIA: Se não tem user, mostra Login. Se tem, mostra App */}
       {!user ? (
         <Stack.Screen
           name="Login"
@@ -59,5 +56,5 @@ export default function AppRoutes() {
         </>
       )}
     </Stack.Navigator>
-  );
+  )
 }

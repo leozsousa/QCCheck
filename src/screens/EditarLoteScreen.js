@@ -11,14 +11,12 @@ export default function EditLoteScreen({ navigation, route }) {
  
   const refData = useRef(null)
   const refResp = useRef(null)
-  const refCargo = useRef(null)
   const refDesc = useRef(null)
 
   const { values, handleChange } = useForm({
     nome: lote.nome,
     data: lote.data,
     responsavel: lote.responsavel,
-    cargo: lote.cargo,
     descricao: lote.descricao,
   });
 
@@ -85,18 +83,8 @@ export default function EditLoteScreen({ navigation, route }) {
         ref={refResp}
         returnKeyType="next"
         onChangeText={(t) => handleChange("responsavel", t)}
-        onSubmitEditing={() => refCargo.current.focus()}
-        placeholder="Responsável"
-      />
-
-      <TextInput
-        style={globalStyles.input}
-        value={values.cargo}
-        ref={refCargo}
-        returnKeyType="next"
-        onChangeText={(t) => handleChange("cargo", t)}
         onSubmitEditing={() => refDesc.current.focus()}
-        placeholder="Cargo" 
+        placeholder="Responsável"
       />
 
       <TextInput

@@ -5,7 +5,6 @@ import { globalStyles } from "../styles/globalstyles";
 export default function ConfirmModal({ visible, lote, onClose, onConfirm }) {
   if (!lote) return null;
 
-  // A FUNÇÃO DEVE FICAR AQUI DENTRO
   const handleReprovar = () => {
     Alert.alert(
       "Confirmar Reprovação",
@@ -18,11 +17,15 @@ export default function ConfirmModal({ visible, lote, onClose, onConfirm }) {
           onPress: () => onConfirm("Reprovado", "#e53935") 
         },
       ]
-    );
-  };
+    )
+  }
 
   return (
-    <Modal visible={visible} animationType="fade" transparent>
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent
+    >
       <View style={styles.bg}>
         <View style={styles.card}>
           <Text style={[globalStyles.titulo2, {fontSize: 20}]}>
@@ -61,9 +64,6 @@ export default function ConfirmModal({ visible, lote, onClose, onConfirm }) {
   );
 }
 
-// Estilos permanecem iguais lá embaixo...
-
-// Estilos do Modal
 const styles = StyleSheet.create({
   bg:{
     flex: 1,

@@ -10,13 +10,11 @@ export default function InspectionScreen({ navigation, route }) {
     nome: "",
     data: "",
     responsavel: "",
-    cargo: "",
     descricao: "",
   });
 
   const refData = useRef(null)
   const refResp = useRef(null)
-  const refCargo = useRef(null)
   const refDesc = useRef(null)
 
   async function salvar() {
@@ -71,16 +69,6 @@ export default function InspectionScreen({ navigation, route }) {
         ref={refResp}
         returnKeyType="next"
         onChangeText={(t) => handleChange("responsavel", t)}
-        onSubmitEditing={() => refCargo.current.focus()}
-      />
-
-      <TextInput
-        placeholder="Cargo"
-        style={globalStyles.input}
-        value={values.cargo}
-        ref={refCargo}
-        returnKeyType="next"
-        onChangeText={(t) => handleChange("cargo", t)}
         onSubmitEditing={() => refDesc.current.focus()}
       />
 
